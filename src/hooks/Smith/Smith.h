@@ -4,7 +4,7 @@ public:
     static void Install();
 
 protected:
-    static void UpdateItemCard(RE::CraftingSubMenus::SmithingMenu* menu);
+    static void DetermineCanCraftSmithingRecipe(RE::GFxValue* element,RE::CraftingSubMenus::SmithingMenu::SmithingItemEntry* entry,RE::CraftingSubMenus::SmithingMenu* menu);
 
 private:
     Smith() = delete;
@@ -15,5 +15,5 @@ private:
     Smith& operator=(const Smith&) = delete;
     Smith& operator=(Smith&&) = delete;
 
-    inline static REL::Relocation<decltype(UpdateItemCard)> func_UpdateItemCard;
+    inline static REL::Relocation<decltype(DetermineCanCraftSmithingRecipe)> func_DetermineCanCraftSmithingRecipe;
 };

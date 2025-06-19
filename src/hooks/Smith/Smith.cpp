@@ -7,19 +7,14 @@ static std::map<RE::FormID, std::vector<int32_t>> OriginalStored;
 
 void Smith::Install() {
 	
-	REL::Relocation<std::uintptr_t> addr{ RELOCATION_ID(51460, 51460) };
-	MH_CreateHook((void*)addr.address(), UpdateItemCard, (void**)&func_UpdateItemCard);
+	REL::Relocation<std::uintptr_t> addr{ RELOCATION_ID(51448, 51448) };
+	MH_CreateHook((void*)addr.address(), DetermineCanCraftSmithingRecipe, (void**)&func_DetermineCanCraftSmithingRecipe);
 
 	ConfigManager::getInstance().HasKey("Multiplier", "1.0");
 }
 
-void Smith::UpdateItemCard(RE::CraftingSubMenus::SmithingMenu* menu){
-	if (menu->unk160) return func_UpdateItemCard(menu);
-
-	auto cur = menu->unk150; //Current Index
-	if(cur >= menu->unk100.size()) return func_UpdateItemCard(menu);
-
-	auto&& constructible = menu->unk100[cur].constructibleObject;
+void Smith::DetermineCanCraftSmithingRecipe(RE::GFxValue* element, RE::CraftingSubMenus::SmithingMenu::SmithingItemEntry* entry, RE::CraftingSubMenus::SmithingMenu* menu){
+	auto&& constructible = entry->constructibleObject;
 	auto&& items = constructible->requiredItems;
 
 	if (!OriginalStored.contains(constructible->formID)) {
@@ -30,12 +25,15 @@ void Smith::UpdateItemCard(RE::CraftingSubMenus::SmithingMenu* menu){
 
 	for (int idx = 0; idx < items.numContainerObjects; idx++) {
 		auto orig = OriginalStored[constructible->formID].at(idx);
-		auto baseitemRate = menu->unk100[cur].unk18;
-		auto finalitemRate = menu->unk100[cur].unk1C;
+		auto baseitemRate = entry->unk18;
+		auto finalitemRate = entry->unk1C;
 		float multiplier = std::stof(ConfigManager::getInstance().GetKey("Multiplier"));
 
 		items.containerObjects[idx]->count = std::ceil(std::pow((1.0 + 5.8 * (finalitemRate - baseitemRate)), 2.1) * multiplier);
 	}
 
-	return func_UpdateItemCard(menu);
+	static REL::Relocation<std::byte(RE::BGSConstructibleObject*)> HasRequiredItems{ RELOCATION_ID(16916, 16916) };
+	entry->unk28 = HasRequiredItems(constructible);
+
+	return func_DetermineCanCraftSmithingRecipe(element, entry, menu);
 }

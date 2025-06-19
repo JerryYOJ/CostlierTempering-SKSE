@@ -36,6 +36,11 @@ if(DEFINED ENV{SKYRIM_MODS_FOLDER} AND IS_DIRECTORY "$ENV{SKYRIM_MODS_FOLDER}")
     set(OUTPUT_FOLDER "$ENV{SKYRIM_MODS_FOLDER}/${PROJECT_NAME}")
 endif()
 
+set(OUTPUT_FOLDER "D:/SteamLibrary/steamapps/common/Skyrim Special Edition/MO2/mods/CostlierTempering")
+if(NOT EXISTS "${OUTPUT_FOLDER}") 
+    set(OUTPUT_FOLDER "C:\\Users\\elain\\AppData\\Local\\ModOrganizer\\Skyrim Special Edition\\mods\\BetterSkyrim")
+endif()
+
 include($ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 # Setup your SKSE plugin as an SKSE plugin!
 find_package(CommonLibSSE CONFIG REQUIRED)
